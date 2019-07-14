@@ -1,0 +1,24 @@
+Yunpai 使用以下开源软件 :
+
+Boost (external)
+  http://www.boost.org
+  Version: 1.66+
+
+fmt (a small, safe and fast formatting library)
+  https://github.com/fmtlib/fmt
+  Version: 5.2.1
+
+spdlog (Very fast, header only, C++ logging library)
+  https://github.com/gabime/spdlog
+
+OpenSSL (general-purpose cryptography library)
+  https://www.openssl.org/
+  Version: external
+
+protobuf (Protocol Buffers - Google's data interchange format https://developers.google.com/protocol-buffers/)
+  https://github.com/google/protobuf
+  Version: v3.6.1
+
+utfcpp (UTF-8 with C++ in a Portable Way)
+  https://github.com/nemtrif/utfcpp
+  Version: 2.3.4
