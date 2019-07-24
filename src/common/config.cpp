@@ -1,19 +1,12 @@
 ﻿/*
  * Copyright (C) 2018 huangtao117@yeah.net QQ:409577078
- * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Licensed under the MIT License (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License
+ * at http://opensource.org/licenses/MIT Unless required by applicable law or
+ * agreed to in writing, software distributed under the License is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
  */
 
 #include "config.h"
@@ -22,6 +15,10 @@
 #include <algorithm>
 #include <memory>
 #include <mutex>
+
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/daily_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace pt = boost::property_tree;
 
@@ -58,6 +55,8 @@ bool ConfigMgr::LoadInitial(std::string const& file, std::vector<std::string> ar
 
         // 约定我们的配置文件只有一节,所以直接访问属性就可以了
         _config = tree.begin()->second;
+
+        // 确保一些配置项必须存在
     }
     catch (pt::ini_parser::ini_parser_error const& e)
     {

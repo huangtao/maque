@@ -14,23 +14,32 @@
 namespace maque {
 
 // 避免全局变量构造、析构问题
-static std::unordered_map<int, const char *> *g_error_string_map = nullptr;
+static std::unordered_map<int, const char*>* g_error_string_map = nullptr;
 struct ErrorInfo {
     ErrorInfo() { g_error_string_map = &_error_info; }
     ~ErrorInfo() { g_error_string_map = nullptr; }
-    std::unordered_map<int, const char *> _error_info;
+    std::unordered_map<int, const char*> _error_info;
 };
 
-const char *GetErrorString(int error_code) {
+const char* GetErrorString(int error_code)
+{
     if (0 == error_code)
         return "no error";
 
     return "unregister error description";
 }
 
-void SetErrorString(int error_code, const char *error_string) {
+void SetErrorString(int error_code, const char* error_string)
+{
     static ErrorInfo s_error_info;
     (*g_error_string_map)[error_code] = error_string;
+}
+
+void AbortHandler(int sigval)
+{
+    printf("call AbortHandler.\n");
+    *((volatile int*)NULL) = 0;
+    exit(1);
 }
 
 } // namespace maque

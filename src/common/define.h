@@ -12,6 +12,7 @@
 #ifndef _MAQUE_COMMON_DEFINE_H_
 #define _MAQUE_COMMON_DEFINE_H_
 
+#include <iostream>
 #include <cstddef>
 #include <cinttypes>
 #include <climits>
@@ -19,5 +20,15 @@
 #include <functional>
 #include <unordered_map>
 #include <tuple>
+
+/**
+ * @brief 日志输出设备，支持控制台、文件、网络
+ */
+typedef enum {
+    DEV_NONE = 0,
+    DEV_STDOUT = 0x01,
+    DEV_FILE = 0x02,
+    DEV_NET = 0x04,
+} DEVICE_TYPE;
 
 #endif // _MAQUE_COMMON_DEFINE_H_

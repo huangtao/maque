@@ -15,11 +15,9 @@
 #include <string>
 #include <vector>
 
-namespace maque
-{
+namespace maque {
 
-class ConfigMgr
-{
+class ConfigMgr {
     ConfigMgr() = default;
     ConfigMgr(ConfigMgr const&) = delete;
     ConfigMgr& operator=(ConfigMgr const&) = delete;
@@ -43,7 +41,7 @@ public:
     std::vector<std::string> GetKeysByString(std::string const& name);
 
 private:
-    template<class T>
+    template <class T>
     T GetValueDefault(std::string const& name, T def) const;
 };
 

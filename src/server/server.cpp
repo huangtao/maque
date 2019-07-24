@@ -1,59 +1,68 @@
+/*
+ * Copyright (C) 2018 huangtao117@yeah.net QQ:409577078
+ * Licensed under the MIT License (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License
+ * at http://opensource.org/licenses/MIT Unless required by applicable law or
+ * agreed to in writing, software distributed under the License is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
 #include "server.h"
-#include <glog/logging.h>
-#include <boost/program_options.hpp>
+#include "log.h"
 #include <boost/filesystem.hpp>
+#include <boost/program_options.hpp>
 
 using namespace boost::program_options;
 namespace fs = boost::filesystem;
 
 namespace maque {
 
-Server::Server() {
+Server::Server()
+{
 }
 
-int Server::Init(int argc, char * argv[]) {
-    signal(SIGABRT, &yunpai::AbortHandler);
+int Server::Init(int argc, char* argv[])
+{
+    signal(SIGABRT, &maque::AbortHandler);
 
-    LoadOptions(argc, argv);
+    if (LoadOptions(argc, argv) == DO_EXIST) {
+        // 版本信息，安装等
+        return DO_EXIST;
+    }
 
-    auto configFile = fs::absolute(_YUNPAI_GATE_CONFIG);
-    std::string configService;
-    auto vm = GetConsoleArguments(argc, argv, configFile, configService);
-    // 如果是帮助和版本参数就退出
-    if (vm.count("help") || vm.count("version"))
-        return 0;
-
-    _event_handler = event_handler;
-
-    InitLog();
-
-    LOG(INFO) << _options.ToString();
+    // 初始化日志
+    Log::Instance()->Initialize();
 
     int ret = InitTimer();
+    if (ret == DO_EXIST) {
+        return DO_EXIST;
+    }
 
     return 0;
 }
 
-int Server::LoadOptions(int argc, char* argv[]) {
+int Server::LoadOptions(int argc, char* argv[])
+{
     std::string configName = argv[0] + ".conf";
     auto configFile = fs::absolute(configName);
 
     // 命令行
     options_description generic("Generic options");
-    generic.add_options()
-        ("version,v", "print version string")
-        ("help,h", "produce help message")
-        ("config,c", value<fs::path>(&configFile)->default_value(fs::absolute(configName)),
-            "name of a file of a configuration.")
-        ;
+    generic.add_options()("version,v", "print version string");
+    generic.add_options()("help,h", "produce help message");
+    generic.add_options()("config,c",
+        value<fs::path>(&configFile)->default_value(fs::absolute(configName)),
+        "name of a file of a configuration.");
 
 #if defined(BOOST_WINDOWS)
     std::string configService;
     // 加服务命令行
     options_description win("Windows platform options");
-    win.add_options()
-        ("service,s", value<std::string>(&configService)->default_value(""), "Windows service options: [install | uninstall]")
-        ;
+    win.add_options()("service,s",
+        value<std::string>(&configService)->default_value(""),
+        "Windows service options: [install | uninstall]");
     generic.add(win);
 #endif
 
@@ -73,7 +82,7 @@ int Server::LoadOptions(int argc, char* argv[]) {
     }
     // 如果是帮助和版本参数就退出
     if (vm.count("help") || vm.count("version"))
-        return 0;
+        return DO_EXIST;
 
 #if defined(BOOST_WINDOWS)
     if (configService.compare("install") == 0)
@@ -84,26 +93,23 @@ int Server::LoadOptions(int argc, char* argv[]) {
         return WinServiceRun() ? 0 : 1;
 #endif
 
-    // 继续
-    return -1;
-}
-
-void Server::InitLog() {
-    FLAGS_log_dir = _options._log_path;
-    // glog默认输出到文件
-    google::InitGoogleLoggint(_options._log_path);
-    if (_options._log_std) {
-        // 写到std
-        FLAGS_alsologtostderr = true;
+    // 加载配置文件
+    std::string configError;
+    bool ret = sConfigMgr->LoadInitial(configFile.generic_string(),
+        std::vector<std::string>(argv, argv + argc),
+        configError);
+    if (!ret) {
+        return DO_EXIST;
     }
-    FLAGS_minloglevel = _options._log_level;            // 日志级别
-    FLAGS_max_log_size = _options._log_file_size_MB;    // 日志文件最大10M
-    FLAGS_log_prefix = true;
-    FLAGS_colorlogtostderr = true;
-}
 
-int Server::InitTimer() {
     return 0;
 }
 
+int Server::InitTimer()
+{
+    // 初始化一个一秒的定时器
+    std::share_ptr<boost::asio::deadline_timer>
+    return 0;
 }
+
+} // namespace maque

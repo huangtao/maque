@@ -21,6 +21,7 @@ namespace maque {
  */
 enum ERROR_CODE_BASE {
     NO_ERROR = 0,
+    DO_EXIST = -1,
     SESSION_ERROR_CODE_BASE = -1000,
     MESSAGE_ERROR_CODE_BASE = -2000,
     USER_ERROR_CODE_BASE = -100000,
@@ -29,12 +30,14 @@ enum ERROR_CODE_BASE {
 /**
  * @brief 获取错误描述
  */
-const char *GetErrorString(int error_code);
+const char* GetErrorString(int error_code);
 
 /**
  * @brief 设置错误描述
  */
-void SetErrorString(int error_code, const char *error_string);
+void SetErrorString(int error_code, const char* error_string);
+
+void AbortHandler(int signal);
 
 } // namespace maque
 #endif // _MAQUE_COMMON_CONFIG_H_
